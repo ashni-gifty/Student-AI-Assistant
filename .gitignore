@@ -1,0 +1,25 @@
+# Secrets
+.env
+*.env
+!.env.example
+
+# Python
+venv/
+.venv/
+__pycache__/
+*.pyc
+
+# Django and app data
+backend/db.sqlite3
+backend/media/
+backend/chroma/
+
+# Node
+node_modules/
+frontend/dist/
+
+# OS and editors
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

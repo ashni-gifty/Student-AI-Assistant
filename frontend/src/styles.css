@@ -1,0 +1,237 @@
+/* ==========================================================================
+   STUDENT AI ASSISTANT - styles.css
+   --------------------------------------------------------------------------
+   HOW THIS FILE IS ORGANISED
+   1. Theme variables and base text
+   2. Page layout: fixed header, fixed footer, scrolling middle   (LATEST)
+   3. Buttons and form fields
+   4. Shared parts: panels, tables, tabs, popup
+   5. Markdown content (answers, summaries, tables, code)
+   6. Pages: Login, Home, Documents, Chat, Summarize, MCQS, History
+   7. Responsive rules (all screen sizes), always kept at the end
+
+   LATEST CHANGES, WHERE TO FIND THEM
+   - Header and footer stay fixed, only the middle scrolls ........ section 2
+   - Menu sits at the right end of the top bar ..................... section 2 (.top nav)
+   - Footer: "Signed in as ..." and Log out, always visible ........ section 2 (footer)
+   - Popup used by Clear chat, Delete and the Custom MCQ number ..... section 4 (.overlay, .modal)
+   - Word-by-word blue highlight when listening ................... section 6 (.w.on)
+   - Summaries tab and delete rows in Chat History ................. section 6 (.histitem)
+   - Screen sizes: 1400px+, up to 1000px, up to 640px, up to 480px . section 7
+
+   RULE: if you add new styles, put them in the section they belong to,
+   and put any new @media rules at the very end (section 7).
+   ========================================================================== */
+
+
+/* ===== 1. THEME VARIABLES AND BASE ===== */
+:root {
+  --bg: #000; --panel: #0b0b0c; --line: #242426; --text: #fff; --muted: #9a9aa1;
+  --blue: #4da3ff; --good: #3ecf8e; --bad: #ff6b6b;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: Inter, "Segoe UI", system-ui, sans-serif; line-height: 1.55; }
+h1, h3, .brand, .quote { font-family: Georgia, "Times New Roman", serif; font-weight: 400; }
+h1 { font-size: 30px; margin: 0 0 16px; }
+h3 { font-size: 18px; margin: 0 0 6px; }
+p { margin: 0 0 10px; }
+.muted { color: var(--muted); }
+.small { font-size: 13px; }
+.note { color: #ffd479; font-size: 14px; }          /* warning or error text */
+.term { color: var(--blue); font-weight: 600; }     /* important word in blue */
+
+
+/* ===== 2. PAGE LAYOUT: fixed header and footer, only the middle scrolls ===== */
+.app { height: 100vh; height: 100dvh; display: flex; flex-direction: column; overflow: hidden; }
+
+/* Top bar: brand on the left, menu on the right */
+.top {
+  flex: none; display: flex; align-items: center; justify-content: space-between; gap: 36px;
+  min-height: 64px; padding: 0 32px; background: #000; border-bottom: 1px solid var(--line);
+}
+.brand { font-size: 21px; letter-spacing: .02em; white-space: nowrap; }
+.top nav { display: flex; gap: 4px; margin-left: auto; justify-content: flex-end; overflow-x: auto; scrollbar-width: none; }
+.top nav::-webkit-scrollbar { display: none; }
+.top nav a { color: var(--muted); text-decoration: none; padding: 8px 14px; border-radius: 8px; font-size: 14px; white-space: nowrap; }
+.top nav a:hover { color: #fff; }
+.top nav a.active { color: #fff; background: #18181a; }
+
+/* Middle: the only part that scrolls */
+main { flex: 1; min-height: 0; width: 100%; overflow-y: auto; }
+.page { max-width: 1040px; margin: 0 auto; padding: 32px 24px 48px; }
+
+/* Bottom bar: signed-in name and Log out */
+footer {
+  flex: none; display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  padding: 14px 32px calc(14px + env(safe-area-inset-bottom, 0px));
+  background: #000; border-top: 1px solid var(--line); color: var(--muted); font-size: 14px;
+}
+footer strong { color: #fff; font-weight: 500; }
+footer span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+footer button { flex: none; }
+
+
+/* ===== 3. BUTTONS AND FORM FIELDS ===== */
+button, .btn, select, input { font: inherit; color: inherit; }
+button { cursor: pointer; }
+.primary { background: #fff; color: #000; border: 0; border-radius: 8px; padding: 10px 18px; font-weight: 600; }
+.primary:disabled { opacity: .5; cursor: default; }
+.ghost { background: transparent; border: 1px solid var(--line); border-radius: 8px; padding: 9px 14px; text-decoration: none; font-size: 14px; display: inline-block; }
+.ghost:hover { border-color: #555; }
+.link { background: none; border: 0; color: var(--muted); font-size: 14px; padding: 0; text-decoration: underline; }
+.link:hover { color: #fff; }
+input, select { background: #000; border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; min-width: 0; }
+input:focus, select:focus, button:focus-visible, a:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 14px; }
+.row input { flex: 1; min-width: 200px; }
+.head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.icon { width: 44px; padding: 0; display: grid; place-items: center; }   /* microphone button */
+.icon.on { background: #fff; color: #000; }
+
+
+/* ===== 4. SHARED PARTS ===== */
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+
+/* Tables (My Documents) */
+.table-wrap { overflow-x: auto; padding: 6px 20px; }
+table { width: 100%; border-collapse: collapse; }
+th, td { text-align: left; padding: 14px 10px; border-bottom: 1px solid var(--line); font-size: 14px; }
+th { color: var(--muted); font-weight: 500; }
+tr:last-child td { border-bottom: 0; }
+.actions { display: flex; gap: 8px; justify-content: flex-end; }
+
+/* Tabs (Chat History: Chats / Summaries) */
+.tabs { display: flex; gap: 6px; border-bottom: 1px solid var(--line); margin-bottom: 8px; }
+.tabs button { background: none; border: 0; color: var(--muted); padding: 10px 18px; border-bottom: 2px solid transparent; margin-bottom: -1px; font-size: 15px; }
+.tabs button:hover { color: #fff; }
+.tabs button.on { color: #fff; border-bottom-color: #fff; }
+
+/* Popup (Clear chat, Delete, Custom number of MCQs) */
+.overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, .78); display: grid; place-items: center; z-index: 20; }
+.modal { background: #0b0b0c; border: 1px solid var(--line); border-radius: 12px; padding: 24px; width: 90%; max-width: 380px; }
+
+
+/* ===== 5. MARKDOWN CONTENT (answers, summaries, tables, code) ===== */
+.md strong { color: var(--blue); font-weight: 700; }     /* important terms are blue */
+.md em { font-style: italic; color: #fff; }
+.md h2 { font-family: Georgia, serif; font-weight: 400; font-size: 24px; margin: 0 0 10px; }
+.md h3 { font-size: 17px; margin: 16px 0 4px; }
+.md ul, .md ol { padding-left: 22px; margin: 0 0 10px; }
+.md > *:last-child { margin-bottom: 0; }
+.md figure { margin: 12px 0; }
+.md img { max-width: 100%; max-height: 260px; border-radius: 8px; }
+.md figcaption { font-size: 12px; color: var(--muted); }
+.md pre { background: #000; border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; overflow-x: auto; font-size: 13px; color: var(--blue); }
+.md code { font-family: ui-monospace, Menlo, Consolas, monospace; }
+.md p code { background: #18181a; padding: 1px 6px; border-radius: 4px; }
+.md table { display: block; overflow-x: auto; border-collapse: collapse; margin: 10px 0; }
+.md th, .md td { border: 1px solid var(--line); padding: 8px 12px; }
+.md th { background: #141416; color: #fff; }
+
+
+/* ===== 6. PAGES ===== */
+
+/* --- Login --- */
+.auth { min-height: 100vh; display: grid; place-items: center; background: #000; padding: 24px; }
+.auth form { width: 100%; max-width: 380px; display: flex; flex-direction: column; gap: 14px; }
+.auth h1 { text-align: center; margin: 0; font-size: 32px; }
+.auth .muted { text-align: center; margin: 0 0 8px; }
+.auth label { display: flex; flex-direction: column; gap: 6px; font-size: 14px; color: var(--muted); }
+.auth-links { display: flex; justify-content: space-between; margin-top: 6px; }
+
+/* --- Home --- */
+.hero { padding: 20px 0 28px; }
+.hero h1 { font-size: 40px; margin-bottom: 8px; }
+.quote { font-size: 19px; color: var(--muted); font-style: italic; max-width: 640px; }
+.grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 22px; }
+.card { color: inherit; text-decoration: none; margin: 0; transition: border-color .15s; }
+.card:hover { border-color: #fff; }
+.result { margin-top: 8px; }
+
+/* --- Chat --- */
+.thread { height: clamp(240px, calc(100dvh - 420px), 680px); overflow-y: auto; display: flex; flex-direction: column; gap: 16px; }
+.msg { display: flex; flex-direction: column; max-width: 82%; }
+.msg.user { align-self: flex-end; align-items: flex-end; }
+.msg.quizmsg { max-width: 100%; width: 100%; }                 /* a quiz inside the chat uses full width */
+.bubble { border: 1px solid var(--line); border-radius: 12px; padding: 12px 16px; background: #0f0f10; }
+.msg.quizmsg .bubble { width: 100%; }
+.msg.user .bubble { background: #fff; color: #000; }
+.msg .bubble p:last-child { margin-bottom: 0; }
+.bubble .quiz { margin-top: 14px; }
+.bubble .quiz .panel { background: #000; }
+.msg.user .bubble .opt { color: #fff; }
+.time { font-size: 12px; color: var(--muted); margin-top: 4px; }
+.src { font-size: 12px; color: var(--muted); margin-top: 10px; }  /* page references and web links */
+.src a { display: block; color: var(--blue); }
+.composer { display: flex; gap: 10px; }
+.composer input { flex: 1; }
+.hint { margin-top: 6px; }
+
+/* --- Summarize --- */
+.toolbar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.toolbar select { flex: 1; min-width: 220px; }
+.sumhead { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; border-bottom: 1px solid var(--line); padding-bottom: 14px; margin-bottom: 14px; }
+.sumhead h3 { margin: 0 0 2px; word-break: break-word; }
+.sumhead .row { margin: 0; }
+.tools { margin-bottom: 18px; }
+.read { max-width: 760px; }
+.read h2 { font-family: Georgia, serif; font-weight: 400; font-size: 26px; margin: 0 0 12px; }
+.read h3 { font-size: 18px; margin: 18px 0 4px; }
+.read p { font-size: 17px; line-height: 2; margin: 0 0 8px; }
+.w { cursor: pointer; border-radius: 4px; padding: 2px 1px; transition: background .12s, color .12s; }  /* one spoken word */
+.w.em { font-style: italic; }
+.w:hover { background: #2b2b2e; }                                /* grey on hover */
+.w.on { color: var(--blue); background: rgba(77, 163, 255, .2); } /* blue while being read */
+
+/* --- MCQS and quiz (also used inside Chat and Home) --- */
+.q { font-size: 16px; }
+.opt { display: block; width: 100%; text-align: left; background: #000; border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; margin-bottom: 8px; }
+.opt:hover:not(:disabled) { border-color: #777; }
+.opt.picked { border-color: #fff; }
+.opt.right { border-color: var(--good); }
+.opt.wrong { border-color: var(--bad); }
+.missing { border-color: var(--bad); }                           /* unanswered question after Submit */
+.warnq { color: var(--bad); font-size: 14px; margin: 8px 0; }
+.ok { color: var(--good); }
+.fixbox { border-top: 1px solid var(--line); margin-top: 14px; padding-top: 14px; }   /* "how to solve it" area */
+.fixbox ol { padding-left: 22px; margin: 0 0 10px; }
+.quote-line { font-family: Georgia, serif; font-style: italic; color: var(--muted); }
+
+/* --- Chat History --- */
+.date { color: var(--muted); font-size: 14px; margin: 22px 0 8px; font-family: inherit; }
+.histitem { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; margin-bottom: 8px; }
+.histitem:hover { border-color: #fff; }
+.histmain { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; background: none; border: 0; text-align: left; padding: 0; }
+.histmain .small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+
+/* ===== 7. RESPONSIVE (keep at the end so these win) ===== */
+
+/* Large screens */
+@media (min-width: 1400px) {
+  .page { max-width: 1180px; }
+}
+
+/* Tablets and small laptops: brand on the first row, menu on the second (still on the right) */
+@media (max-width: 1000px) {
+  .top { flex-direction: column; align-items: stretch; justify-content: flex-start; gap: 2px; padding: 10px 16px 6px; }
+  .top nav { margin-left: 0; padding-bottom: 4px; }
+  .grid4 { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* Small tablets and large phones */
+@media (max-width: 640px) {
+  .hero h1 { font-size: 30px; }
+  .msg { max-width: 95%; }
+  footer { padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px)); }
+}
+
+/* Phones */
+@media (max-width: 480px) {
+  .grid4 { grid-template-columns: 1fr; }
+  .page { padding: 20px 14px 36px; }
+  .brand { font-size: 18px; }
+  .hero h1 { font-size: 28px; }
+  .quote { font-size: 16px; }
+  footer { padding-left: 14px; padding-right: 14px; }
+}

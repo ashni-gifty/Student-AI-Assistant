@@ -149,7 +149,7 @@ tr:last-child td { border-bottom: 0; }
 .result { margin-top: 8px; }
 
 /* --- Chat --- */
-.thread { height: clamp(240px, calc(100dvh - 420px), 680px); overflow-y: auto; display: flex; flex-direction: column; gap: 16px; }
+.thread { overflow-y: auto; display: flex; flex-direction: column; gap: 16px; }
 .msg { display: flex; flex-direction: column; max-width: 82%; }
 .msg.user { align-self: flex-end; align-items: flex-end; }
 .msg.quizmsg { max-width: 100%; width: 100%; }                 /* a quiz inside the chat uses full width */
@@ -166,6 +166,15 @@ tr:last-child td { border-bottom: 0; }
 .composer { display: flex; gap: 10px; }
 .composer input { flex: 1; }
 .hint { margin-top: 6px; }
+/* Chat page fills the space between header and footer; the input row sits above the footer */
+main:has(.chat) { overflow: hidden; display: flex; flex-direction: column; }
+.page:has(> .chat) { flex: 1; min-height: 0; width: 100%; display: flex; flex-direction: column; padding-top: 24px; padding-bottom: 16px; overflow-y: auto; }
+.chat { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.chat .head, .chat .composer, .chat .hint, .chat .note { flex: none; }
+.chat .head h1 { margin-bottom: 12px; }
+.chat .thread { flex: 1; min-height: 180px; margin-bottom: 12px; padding: 24px; }
+.chat .thread > .muted:first-child:nth-last-child(2) { margin: auto; text-align: center; }   /* empty-chat message in the middle */
+.chat .hint { margin: 6px 0 0; text-align: center; }
 
 /* --- Summarize --- */
 .toolbar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
@@ -229,7 +238,8 @@ tr:last-child td { border-bottom: 0; }
 /* Phones */
 @media (max-width: 480px) {
   .grid4 { grid-template-columns: 1fr; }
-  .page { padding: 20px 14px 36px; }
+  .page:has(> .chat) { padding-top: 16px; padding-bottom: 10px; }
+  .chat .thread { padding: 14px; }
   .brand { font-size: 18px; }
   .hero h1 { font-size: 28px; }
   .quote { font-size: 16px; }
